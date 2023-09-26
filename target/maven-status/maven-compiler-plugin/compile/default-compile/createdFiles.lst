@@ -1,1 +1,3 @@
-TextFeed/TextFeedApplication.class
+TextFeed/RedisConsoleApp.class
+TextFeed/controller/RedisController.class
+TextFeed/config/RedisConfig.class

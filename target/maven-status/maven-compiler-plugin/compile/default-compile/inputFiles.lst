@@ -1,1 +1,3 @@
-/home/siriusm/Документы/projects/TextFeed/src/main/java/TextFeed/TextFeedApplication.java
+/home/siriusm/Документы/projects/TextFeed/src/main/java/TextFeed/config/RedisConfig.java
+/home/siriusm/Документы/projects/TextFeed/src/main/java/TextFeed/RedisConsoleApp.java
+/home/siriusm/Документы/projects/TextFeed/src/main/java/TextFeed/controller/RedisController.java
