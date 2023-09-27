@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Redis Text Values</title>
+    <style>
+        /* Стиль для элементов списка */
+        ul li {
+            margin-bottom: px;
+        }
+    </style>
+</head>
+<body>
+<h1>Список текстовых значений из Redis:</h1>
+<ul>
+    <!-- Используем Thymeleaf для отображения значений -->
+    <li th:each="value : ${values}" th:text="${value}"></li>
+</ul>
+
+<h2>Добавить новое значение:</h2>
+<form th:action="@{/add}" method="get">
+    <input type="text" name="value" placeholder="Введите текст" required>
+    <button type="submit">Добавить</button>
+</form>
+</body>
+</html>
