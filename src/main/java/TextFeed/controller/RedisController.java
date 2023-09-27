@@ -1,45 +1,72 @@
 package TextFeed.controller;
 
+import TextFeed.SpecificException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import redis.clients.jedis.Jedis;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
-class RedisController {
-    Jedis jedis = new Jedis("localhost", 6379);
-    public void add(String key, String value){
-        jedis.set(key, value);
-        jedis.close();
+public class RedisController {
+    private final Jedis jedis;
+    private static final Logger logger = LoggerFactory.getLogger(RedisController.class);
+
+    public RedisController() {
+        jedis = new Jedis("localhost", 6379);
     }
-    @GetMapping("/add/{value}")
-    @ResponseBody
-    public String add(@PathVariable String value){
-        System.out.println(jedis.dbSize());
-        add("text" + jedis.dbSize(), value);
-        System.out.println("");
-        System.out.println(jedis.dbSize());
-        System.out.println(value);
-        return "add";
+
+    @GetMapping("/add")
+    public String add(@RequestParam("value") String value) {
+        logger.info("user trying to add new element to redis db.");
+        if (value != null && !value.isEmpty()) {
+            try {
+                String key = "text" + jedis.dbSize();
+                jedis.set(key, value);
+                logger.info("Successfully set key '{}' with value '{}'", key, value);
+            } catch (Exception e) {
+                logger.error("Error occurred while setting key and value in cache. Value: '{}'", value, e);
+                e.printStackTrace();
+                return "error";
+            }
+
+        } else {
+            return "invalidData";
+        }
+
+        return "redirect:/";
     }
 
     @GetMapping("/")
-    @ResponseBody // Эта аннотация указывает, что метод вернет данные, а не будет искать шаблон
     public String getAll(Model model) {
-        Set<String> keys = jedis.keys("text*");
-        List<String> values = new ArrayList<>();
-
-        for (String key : keys) {
-            String value = jedis.get(key);
-            values.add(value);
+        try {
+            List<String> values = retrieveValuesFromRedis();
+            model.addAttribute("values", values);
+            logger.info("Retrieved values from Redis: {}", values);
+            return "home";
+        } catch (Exception e) {
+            handleOtherErrors(e);
+            return "error";
         }
-        model.addAttribute("values", values); // Передаем значения в модель
-        return "home";
+    }
+
+    private List<String> retrieveValuesFromRedis() {
+        Set<String> keys = jedis.keys("text*");
+        return keys.stream()
+                .map(key -> jedis.get(key))
+                .collect(Collectors.toList());
+    }
+
+    private void handleSpecificException(SpecificException e) {
+        logger.error("Specific error occurred", e);
+    }
+
+    private void handleOtherErrors(Exception e) {
+        logger.error("Error occurred while retrieving values from Redis", e);
     }
 }
