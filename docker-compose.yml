@@ -1,14 +1,12 @@
 version: '3'
 services:
+  app:
+    build: .
+    ports:
+      - "8085:8085"
+    links:
+      - redis
   redis:
     image: redis
-    volumes:
-      - ./redis.conf:/etc/redis/redis.conf
-    command: ["redis-server", "/etc/redis/redis.conf"]
-
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "6379:6379"
