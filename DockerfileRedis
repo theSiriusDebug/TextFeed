@@ -1,0 +1,3 @@
+FROM redis
+COPY redis.conf admin:///etc/redis/redis.conf
+CMD [ "redis-server", "admin:///etc/redis/redis.conf" ]

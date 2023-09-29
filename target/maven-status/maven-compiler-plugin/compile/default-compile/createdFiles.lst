@@ -1,3 +1,4 @@
 TextFeed/RedisConsoleApp.class
 TextFeed/controller/RedisController.class
 TextFeed/config/RedisConfig.class
+TextFeed/SpecificException.class
